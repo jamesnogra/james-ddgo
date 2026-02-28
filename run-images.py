@@ -38,34 +38,32 @@ def open_stealth_browser(url):
         print(f"Navigating to: {url}")
         driver.get(url)
         time.sleep(5)
-        # Click "More results" at the bottom
-        for i in range(10):
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(1)
-            try:
-                more_results_button = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'More results')]"))
-                )
-                # 3. Click it
-                more_results_button.click()
-                print("Clicked 'More results' successfully!")
-                time.sleep(5)
-            except Exception as e:
-                print('Reached the end of results')
-                break
 
-        # Get all link results
-        all_results = driver.find_elements(By.XPATH, "//a[@data-testid='result-title-a']")
-        # Loop through and print each one
-        for index, result in enumerate(all_results, 1):
-            url = result.get_attribute("href")
-            title = result.text
-            #print(f"{index}. {title} -> {url}")
-            link_results.append({
-                'title': title,
-                'url': url
-            })
-        #print(json.dumps(link_results, indent=4, sort_keys=True))
+        # Scroll at the bottom of the page to load more images
+        for i in range(1):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+
+        # Get all the image elements li
+        list_items = driver.find_elements(By.XPATH, "//figure[descendant::img]")
+        for item in list_items:
+            try:
+                # Find the <img> tag inside this specific figure
+                # .//img means "search for any img descendant of THIS element"
+                img_element = item.find_element(By.XPATH, ".//img")
+                img_src = img_element.get_attribute("src")
+                # Find the <a> tag inside this specific figure
+                a_element = item.find_element(By.XPATH, ".//a")
+                link_href = a_element.get_attribute("href")
+                # Optional: Grab the title text while you're at it
+                title_text = a_element.text
+                link_results.append({
+                    "image": img_src,
+                    "link": link_href,
+                    "title": title_text
+                })
+            except Exception as e:
+                print(f"Skipping an item due to error: {e}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -73,7 +71,7 @@ def open_stealth_browser(url):
         driver.quit()
 
 def write_results_to_file():
-    filename = f"results-{NAME_STRING_TO_SEARCH}.csv"
+    filename = f"results-images-{NAME_STRING_TO_SEARCH}.csv"
     headers = link_results[0].keys()
     # 3. Write to the file
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
@@ -83,6 +81,6 @@ def write_results_to_file():
         # Write all the data rows
         writer.writerows(link_results)
 
-target_url = f'https://duckduckgo.com/?ia=web&origin=funnel_home_website&t=h_&q="{NAME_STRING_TO_SEARCH}"&chip-select=search'
+target_url = f'https://duckduckgo.com/?q=%22"{NAME_STRING_TO_SEARCH}"%22&t=h_&ia=images&iax=images'
 open_stealth_browser(target_url)
 write_results_to_file()

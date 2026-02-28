@@ -1,7 +1,12 @@
 # Installation
  - Clone this project git clone `https://github.com/jamesnogra/james-ddgo.git`
  - Download corresponding Chromedriver of your Google Chrome version at https://googlechromelabs.github.io/chrome-for-testing/#stable
+ 	- Check Google Chrome version by opening this in the URL `chrome://settings/help`
+ 	- Download corresponding chromedriver version:
+ 		- Windows: https://storage.googleapis.com/chrome-for-testing-public/GOOGLE_CHROME_VERSION/win64/chromedriver-win64.zip
+ 		- Mac Silicon: https://storage.googleapis.com/chrome-for-testing-public/GOOGLE_CHROME_VERSION/mac-arm64/chromedriver-mac-arm64.zip 
  - Add the ENV path of the chromedriver you just downloaded and extracted
  - Install packages by running `npm install -r requirements.txt`
- - Open the run.py script and edit line 10 `NAME_STRING_TO_SEARCH = 'james arnold nogra'`
+ - Open the run.py script and edit line 12 `NAME_STRING_TO_SEARCH = 'james arnold nogra'`
  - Run the script `python run.py`
+ - After the script runs, it will create a CSV file in the same location as the run.py
